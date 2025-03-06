@@ -1,13 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, TouchableOpacity } from "react-native";
-import { db } from "../firebaseConfig";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { db, auth } from "../firebaseConfig"; // Importa autenticação
+import { collection, getDocs, addDoc, doc, getDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 
 export default function StockScreen() {
   const [stocks, setStocks] = useState([]);
   const [stockName, setStockName] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false); // Estado para verificar se o usuário é admin
   const navigation = useNavigation();
+
+  // Função para buscar o tipo de usuário no Firestore
+  const fetchUserRole = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert("Erro", "Usuário não autenticado.");
+        return;
+      }
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        setIsAdmin(userDoc.data().role === "administrador"); // Verifica se o usuário é admin
+      }
+    } catch (error) {
+      Alert.alert("Erro ao buscar permissões", error.message);
+    }
+  };
 
   // Função para carregar os estoques do Firestore
   const fetchStocks = async () => {
@@ -24,13 +43,19 @@ export default function StockScreen() {
     }
   };
 
-  // Carrega os estoques ao montar o componente
+  // Carrega os dados do usuário e os estoques ao montar o componente
   useEffect(() => {
+    fetchUserRole();
     fetchStocks();
   }, []);
 
   // Função para adicionar um novo estoque
   const handleAddStock = async () => {
+    if (!isAdmin) {
+      Alert.alert("Permissão negada", "Apenas administradores podem criar estoques.");
+      return;
+    }
+
     if (!stockName.trim()) {
       Alert.alert("Erro", "O nome do estoque não pode estar vazio.");
       return;
@@ -52,21 +77,27 @@ export default function StockScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Estoques</Text>
 
-      <TextInput
-        placeholder="Nome do Estoque"
-        value={stockName}
-        onChangeText={setStockName}
-        style={styles.input}
-      />
+      {/* Campo para adicionar estoques (visível apenas para admins) */}
+      {isAdmin && (
+        <>
+          <TextInput
+            placeholder="Nome do Estoque"
+            value={stockName}
+            onChangeText={setStockName}
+            style={styles.input}
+          />
+          <Button title="Adicionar Estoque" onPress={handleAddStock} color="#007BFF" />
+        </>
+      )}
 
-      <Button title="Adicionar Estoque" onPress={handleAddStock} color="#007BFF" />
-
-      {/* Lista de estoques */}
       <FlatList
         data={stocks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.stockItem} onPress={() => navigation.navigate("StockSelect", { stockId: item.id })}>
+          <TouchableOpacity
+            style={styles.stockItem}
+            onPress={() => navigation.navigate("StockSelect", { stockId: item.id })}
+          >
             <Text style={styles.stockIcon}>📦</Text>
             <Text style={styles.stockName}>{item.name}</Text>
           </TouchableOpacity>

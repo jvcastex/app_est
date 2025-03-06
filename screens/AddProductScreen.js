@@ -1,4 +1,3 @@
-// screens/AddProductScreen.js
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { db } from "../firebaseConfig";
@@ -36,14 +35,29 @@ export default function AddProductScreen({ navigation }) {
   // Função para adicionar um novo produto ao Firestore
   const handleAddProduct = async () => {
     try {
+      // Validações para garantir que todos os campos necessários estejam preenchidos
       if (!name || !quantity || !location || !arrivalDate || !description) {
         Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
         return;
       }
 
+      // Validação para a quantidade (deve ser um número)
+      const quantityInt = parseInt(quantity, 10);
+      if (isNaN(quantityInt) || quantityInt <= 0) {
+        Alert.alert("Erro", "A quantidade deve ser um número válido.");
+        return;
+      }
+
+      // Validação para a data de chegada (deve estar no formato correto)
+      const regex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!regex.test(arrivalDate)) {
+        Alert.alert("Erro", "A data de chegada deve estar no formato AAAA-MM-DD.");
+        return;
+      }
+
       const productData = {
         name,
-        quantity: parseInt(quantity, 10),
+        quantity: quantityInt,
         location,
         arrivalDate,
         photo,
@@ -67,7 +81,7 @@ export default function AddProductScreen({ navigation }) {
       // Redireciona para a tela de estoques
       navigation.navigate("Stocks");
     } catch (error) {
-      Alert.alert("Erro", error.message);
+      Alert.alert("Erro", `Erro ao adicionar o produto: ${error.message}`);
     }
   };
 

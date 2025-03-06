@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { 
+  View, 
+  Text, 
+  FlatList, 
+  StyleSheet, 
+  Alert, 
+  TouchableOpacity 
+} from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { db } from "../firebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 export default function StockSelect() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { stockId } = route.params;
   const [products, setProducts] = useState([]);
 
@@ -21,7 +29,7 @@ export default function StockSelect() {
       }));
       setProducts(productsData);
     } catch (error) {
-      Alert.alert("Erro", error.message);
+      Alert.alert("Erro ao buscar produtos", error.message);
     }
   };
 
@@ -32,6 +40,25 @@ export default function StockSelect() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Produtos do Estoque</Text>
+
+      {/* Botões para Adicionar e Remover Produtos */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("AddProduct", { stockId })}
+        >
+          <Text style={styles.buttonText}>Adicionar Produto</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.removeButton]}
+          onPress={() => navigation.navigate("RemoveProduct", { stockId })}
+        >
+          <Text style={styles.buttonText}>Remover Produto</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Lista de Produtos */}
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}
@@ -46,6 +73,7 @@ export default function StockSelect() {
   );
 }
 
+// Estilos da tela
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -58,6 +86,26 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
     color: "#333",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: "#28A745",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  removeButton: {
+    backgroundColor: "#DC3545",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
   },
   productItem: {
     backgroundColor: "#FFF",
