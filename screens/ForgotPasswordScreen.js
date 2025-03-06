@@ -1,6 +1,6 @@
 // screens/ForgotPasswordScreen.js
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";  // Importando corretamente a função e a autenticação
 
 export default function ForgotPasswordScreen({ navigation }) {
@@ -32,6 +32,15 @@ export default function ForgotPasswordScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoContainer}>
+        <Image source={require('../public/logo.png')} style={styles.logo} />
+        <Text style={styles.companyName}>
+          <Text style={styles.tagText}>Tag</Text>
+          <Text style={styles.itText}>It</Text>
+        </Text>
+      </View>
+
       <Text style={styles.title}>Recuperar Senha</Text>
 
       {/* Campo de entrada para o email */}
@@ -45,32 +54,70 @@ export default function ForgotPasswordScreen({ navigation }) {
       />
 
       {/* Botão para enviar o link de redefinição de senha */}
-      <Button title="Enviar Link" onPress={handleResetPassword} color="#DC3545" />
+      <TouchableOpacity style={styles.primaryButton} onPress={handleResetPassword}>
+        <Text style={styles.buttonText}>Enviar Link</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
-// Estilos da tela
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#1A1A1A", // Cor de fundo escura
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+    marginRight: 10,
+  },
+  companyName: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#FFFFFF", // Branco
+    textShadowColor: '#000000', // Sombra para destacar
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
+  tagText: {
+    color: '#39FF14', // Verde neon
+  },
+  itText: {
+    color: '#FFFFFF', // Branco
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 20,
-    color: "#333",
+    marginBottom: 30,
+    color: "#FFFFFF", // Branco
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
+    borderColor: "#E0E0E0", // Borda suave
+    padding: 15,
     marginBottom: 15,
-    borderRadius: 5,
-    backgroundColor: "#fff",
+    borderRadius: 8,
+    backgroundColor: "#FAFAFA", // Fundo levemente acinzentado
+    fontSize: 16,
+  },
+  primaryButton: {
+    backgroundColor: "#DC3545", // Vermelho discreto
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
