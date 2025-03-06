@@ -1,8 +1,9 @@
 // screens/DeleteAccountScreen.js
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import { auth } from "../firebaseConfig";
 import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "firebase/auth"; // Importações necessárias
+import Icon from 'react-native-vector-icons/FontAwesome'; // Importe o ícone
 
 export default function DeleteAccountScreen({ navigation }) {
   const [password, setPassword] = useState("");
@@ -37,6 +38,15 @@ export default function DeleteAccountScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoContainer}>
+        <Image source={require('../public/logo.png')} style={styles.logo} />
+        <Text style={styles.companyName}>
+          <Text style={styles.tagText}>Tag</Text>
+          <Text style={styles.itText}>It</Text>
+        </Text>
+      </View>
+
       <Text style={styles.title}>Excluir Conta</Text>
 
       {/* Campo de entrada para a senha */}
@@ -49,7 +59,10 @@ export default function DeleteAccountScreen({ navigation }) {
       />
 
       {/* Botão para excluir a conta */}
-      <Button title="Excluir Conta" onPress={handleDeleteAccount} color="#DC3545" />
+      <TouchableOpacity style={styles.dangerButton} onPress={handleDeleteAccount}>
+        <Icon name="trash" size={24} color="#FFFFFF" style={styles.icon} />
+        <Text style={styles.buttonText}>Excluir Conta</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -60,21 +73,63 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#1A1A1A", // Cor de fundo escura
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+    marginRight: 10,
+  },
+  companyName: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#FFFFFF", // Branco
+    textShadowColor: '#000000', // Sombra para destacar
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
+  tagText: {
+    color: '#39FF14', // Verde neon
+  },
+  itText: {
+    color: '#FFFFFF', // Branco
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 20,
-    color: "#333",
+    marginBottom: 30,
+    color: "#FFFFFF", // Branco
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
+    borderColor: "#E0E0E0", // Borda suave
+    padding: 15,
     marginBottom: 15,
-    borderRadius: 5,
-    backgroundColor: "#fff",
+    borderRadius: 8,
+    backgroundColor: "#FAFAFA", // Fundo levemente acinzentado
+    fontSize: 16,
+  },
+  dangerButton: {
+    backgroundColor: "#DC3545", // Vermelho discreto
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
 });
