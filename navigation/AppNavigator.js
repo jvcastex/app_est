@@ -1,3 +1,4 @@
+// AppNavigator.js
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -22,9 +23,10 @@ export default function AppNavigator() {
       <Stack.Navigator
         initialRouteName="Login"
         screenOptions={{
-          headerStyle: { backgroundColor: "#007BFF" },
-          headerTintColor: "#fff",
-          headerTitleStyle: { fontWeight: "bold" },
+          headerStyle: { backgroundColor: "#1A1A1A" }, // Fundo escuro
+          headerTintColor: "#FFFFFF", // Texto branco
+          headerTitleStyle: { fontWeight: "bold", fontSize: 20 },
+          headerBackTitleVisible: false, // Oculta o título de volta
         }}
       >
         {/* Tela de Login */}
